@@ -1,14 +1,13 @@
 import streamlit as st
 import datetime
-import time
 import random
 
 st.set_page_config(page_title="Kiran Weds Anusha 💍", layout="wide")
 
-# Wedding Date
+# Wedding date
 wedding_date = datetime.datetime(2026, 4, 26, 0, 0, 0)
 
-# Background images (royalty free wedding images)
+# Background images
 backgrounds = [
     "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
     "https://images.unsplash.com/photo-1519741497674-611481863552",
@@ -17,7 +16,7 @@ backgrounds = [
     "https://images.unsplash.com/photo-1537633552985-df8429e8048b"
 ]
 
-# Marriage Quotes
+# Quotes
 quotes = [
     "Two souls, one heart 💕",
     "Together is a beautiful place to be ❤️",
@@ -26,25 +25,40 @@ quotes = [
     "Where there is love, there is life 🌸"
 ]
 
-# Random selection
-bg_image = random.choice(backgrounds)
-quote = random.choice(quotes)
+# Initialize session state counter
+if "bg_index" not in st.session_state:
+    st.session_state.bg_index = 0
+
+# Auto refresh every second
+st.markdown(
+    """
+    <meta http-equiv="refresh" content="1">
+    """,
+    unsafe_allow_html=True
+)
+
+# Change background every 5 seconds
+current_second = datetime.datetime.now().second
+if current_second % 5 == 0:
+    st.session_state.bg_index = (st.session_state.bg_index + 1) % len(backgrounds)
+
+bg_image = backgrounds[st.session_state.bg_index]
+quote = quotes[st.session_state.bg_index % len(quotes)]
 
 # Background styling
-page_bg = f"""
+st.markdown(f"""
 <style>
 [data-testid="stAppViewContainer"] {{
     background-image: url("{bg_image}");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transition: background-image 1s ease-in-out;
 }}
 
-.main-container {{
-    background: rgba(0, 0, 0, 0.55);
-    padding: 40px;
-    border-radius: 15px;
+.overlay {{
+    background: rgba(0,0,0,0.6);
+    padding: 50px;
+    border-radius: 20px;
     text-align: center;
     color: white;
 }}
@@ -52,59 +66,58 @@ page_bg = f"""
 .title {{
     font-size: 60px;
     font-weight: bold;
-    color: #FFD700;
+    color: gold;
 }}
 
 .subtitle {{
-    font-size: 30px;
+    font-size: 35px;
     margin-top: 10px;
-    color: #FFDEE9;
+}}
+
+.countdown {{
+    font-size: 32px;
+    margin-top: 20px;
 }}
 
 .venue {{
-    font-size: 22px;
-    margin-top: 20px;
+    font-size: 24px;
+    margin-top: 25px;
+}}
+
+.note {{
+    font-size: 20px;
+    margin-top: 25px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }}
 
 .quote {{
     font-size: 26px;
-    font-style: italic;
     margin-top: 30px;
-    color: #FFE4E1;
-}}
-
-.invite-note {{
-    font-size: 20px;
-    margin-top: 25px;
-    color: #F8F8FF;
+    font-style: italic;
+    color: #FFDAB9;
 }}
 </style>
-"""
+""", unsafe_allow_html=True)
 
-st.markdown(page_bg, unsafe_allow_html=True)
+# Countdown calculation
+now = datetime.datetime.now()
+remaining = wedding_date - now
 
-# Countdown function
-def get_countdown():
-    now = datetime.datetime.now()
-    remaining = wedding_date - now
-    days = remaining.days
-    seconds = remaining.seconds
-    hours = seconds // 3600
-    minutes = (seconds % 3600) // 60
-    secs = seconds % 60
-    return days, hours, minutes, secs
+days = remaining.days
+hours = remaining.seconds // 3600
+minutes = (remaining.seconds % 3600) // 60
+seconds = remaining.seconds % 60
 
-# Main container
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
+# Page Content
+st.markdown('<div class="overlay">', unsafe_allow_html=True)
 
 st.markdown('<div class="title">Kiran 💖 Anusha</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Kiran Weds Anusha</div>', unsafe_allow_html=True)
 
-days, hours, minutes, secs = get_countdown()
-
 st.markdown(
-    f"<h2>⏳ Countdown to Our Big Day:</h2>"
-    f"<h1>{days} Days {hours} Hours {minutes} Minutes {secs} Seconds</h1>",
+    f'<div class="countdown">⏳ {days} Days {hours} Hours {minutes} Minutes {seconds} Seconds</div>',
     unsafe_allow_html=True
 )
 
@@ -114,11 +127,11 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="invite-note">'
-    'With the blessings of our elders and the grace of God, '
-    'we joyfully invite you to celebrate the auspicious occasion of our marriage. '
-    'Your presence will make our special day even more memorable. '
-    'Kindly join us and bless the couple for a lifetime of love and happiness.'
+    '<div class="note">'
+    'With the blessings of our elders and by the grace of God, '
+    'we joyfully invite you to share in the celebration of our wedding. '
+    'Your presence and blessings will make our special day truly memorable. '
+    'Kindly join us as we begin our beautiful journey together.'
     '</div>',
     unsafe_allow_html=True
 )
@@ -126,7 +139,3 @@ st.markdown(
 st.markdown(f'<div class="quote">"{quote}"</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-# Auto refresh every 5 seconds
-time.sleep(5)
-st.experimental_rerun()
