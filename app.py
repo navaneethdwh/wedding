@@ -1,38 +1,23 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Kiran Weds Anusha 💍", layout="wide")
+st.set_page_config(page_title="Kiran Weds 💍", layout="wide")
 
-# Wedding Date (YYYY-MM-DD HH:MM:SS)
 wedding_date = "2026-04-26T00:00:00"
 
-backgrounds = [
-    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
-    "https://images.unsplash.com/photo-1519741497674-611481863552",
-    "https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d",
-    "https://images.unsplash.com/photo-1606214174585-fe31582dc6ee",
-    "https://images.unsplash.com/photo-1537633552985-df8429e8048b"
-]
-
-quotes = [
-    "Two souls, one heart 💕",
-    "Together is a beautiful place to be ❤️",
-    "A journey of love begins forever ✨",
-    "From this day forward, you shall not walk alone 💍",
-    "Where there is love, there is life 🌸"
-]
-
-background_js_array = str(backgrounds)
-quotes_js_array = str(quotes)
-
-st.markdown(f"""
+html_code = f"""
+<!DOCTYPE html>
+<html>
+<head>
 <style>
 body {{
     margin: 0;
     padding: 0;
     overflow: hidden;
+    font-family: Arial, sans-serif;
 }}
 
-.wedding-container {{
+.main {{
     height: 100vh;
     width: 100vw;
     display: flex;
@@ -46,7 +31,7 @@ body {{
 }}
 
 .overlay {{
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.6);
     padding: 50px;
     border-radius: 20px;
 }}
@@ -63,50 +48,50 @@ body {{
 }}
 
 .countdown {{
-    font-size: 32px;
+    font-size: 30px;
     margin-top: 20px;
 }}
 
-.venue {{
+.quote {{
     font-size: 24px;
     margin-top: 25px;
-}}
-
-.note {{
-    font-size: 20px;
-    margin-top: 25px;
-    max-width: 900px;
-}}
-
-.quote {{
-    font-size: 26px;
-    margin-top: 30px;
     font-style: italic;
     color: #FFDAB9;
 }}
 </style>
+</head>
 
-<div id="main" class="wedding-container">
+<body>
+
+<div id="mainDiv" class="main">
     <div class="overlay">
-        <div class="title">Kiran 💖 Anusha</div>
-        <div class="subtitle">Kiran Weds Anusha</div>
+        <div class="title">Kiran 💖 </div>
+        <div class="subtitle">Kiran Weds ______</div>
         <div id="countdown" class="countdown"></div>
-        <div class="venue">📍 Venue: Sri Kanyaka Parimeshwari Temple, Rajoli</div>
-        <div class="note">
-            With the blessings of our elders and by the grace of God,
-            we joyfully invite you to celebrate our wedding.
-            Your presence and blessings will make our special day truly memorable.
-        </div>
         <div id="quote" class="quote"></div>
     </div>
 </div>
 
 <script>
 const weddingDate = new Date("{wedding_date}").getTime();
-const backgrounds = {background_js_array};
-const quotes = {quotes_js_array};
 
-let bgIndex = 0;
+const backgrounds = [
+"https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
+"https://images.unsplash.com/photo-1519741497674-611481863552",
+"https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d",
+"https://images.unsplash.com/photo-1606214174585-fe31582dc6ee",
+"https://images.unsplash.com/photo-1537633552985-df8429e8048b"
+];
+
+const quotes = [
+"Two souls, one heart 💕",
+"Together is a beautiful place to be ❤️",
+"A journey of love begins forever ✨",
+"From this day forward, you shall not walk alone 💍",
+"Where there is love, there is life 🌸"
+];
+
+let index = 0;
 
 function updateCountdown() {{
     const now = new Date().getTime();
@@ -122,16 +107,21 @@ function updateCountdown() {{
 }}
 
 function changeBackground() {{
-    const mainDiv = document.getElementById("main");
-    mainDiv.style.backgroundImage = "url('" + backgrounds[bgIndex] + "')";
-    document.getElementById("quote").innerHTML = '"' + quotes[bgIndex] + '"';
-    bgIndex = (bgIndex + 1) % backgrounds.length;
+    const main = document.getElementById("mainDiv");
+    main.style.backgroundImage = "url('" + backgrounds[index] + "')";
+    document.getElementById("quote").innerHTML = '"' + quotes[index] + '"';
+    index = (index + 1) % backgrounds.length;
 }}
 
-setInterval(updateCountdown, 1000);   // every second
-setInterval(changeBackground, 5000);  // every 5 seconds
+setInterval(updateCountdown, 1000);
+setInterval(changeBackground, 5000);
 
-changeBackground();
 updateCountdown();
+changeBackground();
 </script>
-""", unsafe_allow_html=True)
+
+</body>
+</html>
+"""
+
+components.html(html_code, height=800)
