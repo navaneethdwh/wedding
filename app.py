@@ -1,13 +1,10 @@
 import streamlit as st
-import datetime
-import random
 
 st.set_page_config(page_title="Kiran Weds Anusha 💍", layout="wide")
 
-# Wedding date
-wedding_date = datetime.datetime(2026, 4, 26, 0, 0, 0)
+# Wedding Date (YYYY-MM-DD HH:MM:SS)
+wedding_date = "2026-04-26T00:00:00"
 
-# Background images
 backgrounds = [
     "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
     "https://images.unsplash.com/photo-1519741497674-611481863552",
@@ -16,7 +13,6 @@ backgrounds = [
     "https://images.unsplash.com/photo-1537633552985-df8429e8048b"
 ]
 
-# Quotes
 quotes = [
     "Two souls, one heart 💕",
     "Together is a beautiful place to be ❤️",
@@ -25,42 +21,34 @@ quotes = [
     "Where there is love, there is life 🌸"
 ]
 
-# Initialize session state counter
-if "bg_index" not in st.session_state:
-    st.session_state.bg_index = 0
+background_js_array = str(backgrounds)
+quotes_js_array = str(quotes)
 
-# Auto refresh every second
-st.markdown(
-    """
-    <meta http-equiv="refresh" content="1">
-    """,
-    unsafe_allow_html=True
-)
-
-# Change background every 5 seconds
-current_second = datetime.datetime.now().second
-if current_second % 5 == 0:
-    st.session_state.bg_index = (st.session_state.bg_index + 1) % len(backgrounds)
-
-bg_image = backgrounds[st.session_state.bg_index]
-quote = quotes[st.session_state.bg_index % len(quotes)]
-
-# Background styling
 st.markdown(f"""
 <style>
-[data-testid="stAppViewContainer"] {{
-    background-image: url("{bg_image}");
+body {{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}}
+
+.wedding-container {{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    transition: background-image 1.5s ease-in-out;
 }}
 
 .overlay {{
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.55);
     padding: 50px;
     border-radius: 20px;
-    text-align: center;
-    color: white;
 }}
 
 .title {{
@@ -88,8 +76,6 @@ st.markdown(f"""
     font-size: 20px;
     margin-top: 25px;
     max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
 }}
 
 .quote {{
@@ -99,43 +85,53 @@ st.markdown(f"""
     color: #FFDAB9;
 }}
 </style>
+
+<div id="main" class="wedding-container">
+    <div class="overlay">
+        <div class="title">Kiran 💖 Anusha</div>
+        <div class="subtitle">Kiran Weds Anusha</div>
+        <div id="countdown" class="countdown"></div>
+        <div class="venue">📍 Venue: Sri Kanyaka Parimeshwari Temple, Rajoli</div>
+        <div class="note">
+            With the blessings of our elders and by the grace of God,
+            we joyfully invite you to celebrate our wedding.
+            Your presence and blessings will make our special day truly memorable.
+        </div>
+        <div id="quote" class="quote"></div>
+    </div>
+</div>
+
+<script>
+const weddingDate = new Date("{wedding_date}").getTime();
+const backgrounds = {background_js_array};
+const quotes = {quotes_js_array};
+
+let bgIndex = 0;
+
+function updateCountdown() {{
+    const now = new Date().getTime();
+    const distance = weddingDate - now;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("countdown").innerHTML =
+        "⏳ " + days + " Days " + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds";
+}}
+
+function changeBackground() {{
+    const mainDiv = document.getElementById("main");
+    mainDiv.style.backgroundImage = "url('" + backgrounds[bgIndex] + "')";
+    document.getElementById("quote").innerHTML = '"' + quotes[bgIndex] + '"';
+    bgIndex = (bgIndex + 1) % backgrounds.length;
+}}
+
+setInterval(updateCountdown, 1000);   // every second
+setInterval(changeBackground, 5000);  // every 5 seconds
+
+changeBackground();
+updateCountdown();
+</script>
 """, unsafe_allow_html=True)
-
-# Countdown calculation
-now = datetime.datetime.now()
-remaining = wedding_date - now
-
-days = remaining.days
-hours = remaining.seconds // 3600
-minutes = (remaining.seconds % 3600) // 60
-seconds = remaining.seconds % 60
-
-# Page Content
-st.markdown('<div class="overlay">', unsafe_allow_html=True)
-
-st.markdown('<div class="title">Kiran 💖 Anusha</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Kiran Weds Anusha</div>', unsafe_allow_html=True)
-
-st.markdown(
-    f'<div class="countdown">⏳ {days} Days {hours} Hours {minutes} Minutes {seconds} Seconds</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="venue">📍 Venue: Sri Kanyaka Parimeshwari Temple, Rajoli</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="note">'
-    'With the blessings of our elders and by the grace of God, '
-    'we joyfully invite you to share in the celebration of our wedding. '
-    'Your presence and blessings will make our special day truly memorable. '
-    'Kindly join us as we begin our beautiful journey together.'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(f'<div class="quote">"{quote}"</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
